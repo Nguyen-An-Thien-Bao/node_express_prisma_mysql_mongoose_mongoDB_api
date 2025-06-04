@@ -3,7 +3,7 @@ const path = require('path');
 const connectionDB = require('./configs/dbConnection');
 
 const viewEngineConfig = require('./configs/configViewEngine');
-const webRoutes = require('./routes/webRoutes');
+const drinkRoutes = require('./routes/drinkRoutes');
 require('dotenv').config();
 
 const app = express();
@@ -13,10 +13,15 @@ const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/', webRoutes);
+app.use('/v1/api/', drinkRoutes);
 
-connectionDB();
-
-app.listen(PORT, () => {
-    console.log(`API is running on port ${PORT}`);
-});
+(async () => {
+    try {
+        await connectionDB();
+        app.listen(PORT, () => {
+            console.log(`API is running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.log('>>> We have an error, cannot start the API ', error);
+    }
+})();

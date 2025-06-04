@@ -29,14 +29,21 @@ const dbState = [
         label: 'Connecting',
     },
     {
-        value: 3, 
+        value: 3,
         label: 'Disconnecting',
     },
 ];
 
+const connectionOptions = {
+    dbName: 'Menu',
+    user: 'root',
+    pass: '123456',
+    autoIndex: true,
+};
+
 const connectionDB = async () => {
     try {
-        await mongoose.connect('mongodb://root:123456@localhost:27018/');
+        await mongoose.connect('mongodb://root:123456@localhost:27018/', connectionOptions);
         const state = Number(mongoose.connection.readyState);
         console.log(dbState.find((f) => f.value == state).label, 'to Database'); // checking connection
     } catch (error) {
