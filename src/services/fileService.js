@@ -1,10 +1,21 @@
+const fs = require('fs');
+const path = require('path');
+
 const uploadSingleFile = async (fileObject) => {
+    const uploadPath = path.join(__dirname, '../public/images/upload');
+    if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    const extName = path.extname(fileObject.name);
+    const baseName = path.basename(fileObject.name, extName);
+    const finalName = `${baseName}-${Date.now()}${extName}`;
+    const finalPath = `${uploadPath}/${finalName}`;
+
     try {
-        let uploadPath = __dirname + fileObject.name;
-        await fileObject.mv(uploadPath);
+        await fileObject.mv(finalPath);
         return {
             status: 'success',
-            path: 'link-image',
+            path: uploadPath,
             error: null,
         };
     } catch (error) {
@@ -19,15 +30,24 @@ const uploadSingleFile = async (fileObject) => {
 const uploadMultipleFile = async (fileObjectArray) => {
     try {
         let uploadPath;
+        const result = [];
         for (let i = 0; i < fileObjectArray.length; i++) {
-            uploadPath = __dirname + fileObjectArray[i].name;
-            await fileObjectArray[i].mv(uploadPath);
+            uploadPath = path.join(__dirname, '../public/images/upload');
+            if (!fs.existsSync(uploadPath)) {
+                fs.mkdirSync(uploadPath, { recursive: true });
+            }
+            const extName = path.extname(fileObjectArray[i].name);
+            const baseName = path.basename(fileObjectArray[i].name, extName);
+            const finalName = `${baseName}-${Date.now()}${extName}`;
+            const finalPath = `${uploadPath}/${finalName}`;
+            await fileObjectArray[i].mv(finalPath);
+            result.push({
+                status: 'success',
+                path: uploadPath,
+                error: null,
+            });
         }
-        return {
-            status: 'success',
-            path: 'link-image',
-            error: null,
-        };
+        return result;
     } catch (error) {
         return {
             status: 'fail',
