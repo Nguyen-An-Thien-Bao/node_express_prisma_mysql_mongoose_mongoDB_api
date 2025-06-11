@@ -9,13 +9,13 @@ const uploadSingleFile = async (fileObject) => {
     const extName = path.extname(fileObject.name);
     const baseName = path.basename(fileObject.name, extName);
     const finalName = `${baseName}-${Date.now()}${extName}`;
-    const finalPath = `${uploadPath}/${finalName}`;
+    const finalPath = `${uploadPath}\\${finalName}`;
 
     try {
         await fileObject.mv(finalPath);
         return {
             status: 'success',
-            path: uploadPath,
+            path: finalPath,
             error: null,
         };
     } catch (error) {
@@ -39,11 +39,11 @@ const uploadMultipleFile = async (fileObjectArray) => {
             const extName = path.extname(fileObjectArray[i].name);
             const baseName = path.basename(fileObjectArray[i].name, extName);
             const finalName = `${baseName}-${Date.now()}${extName}`;
-            const finalPath = `${uploadPath}/${finalName}`;
+            const finalPath = `${uploadPath}\\${finalName}`;
             await fileObjectArray[i].mv(finalPath);
             result.push({
                 status: 'success',
-                path: uploadPath,
+                path: finalPath,
                 error: null,
             });
         }

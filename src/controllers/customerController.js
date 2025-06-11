@@ -3,10 +3,12 @@ const {
     createCustomerService,
     createArrayOfCustomerService,
     getCustomersService,
+    updateCustomerService,
+    deleteCustomerService,
+    deleteArrayOfCustomerService,
 } = require('../services/customerService');
 
 const postUploadSingleFile = async (req, res) => {
-    console.log(req.files.image.mv);
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded');
     }
@@ -73,7 +75,42 @@ const getCustomer = async (req, res) => {
 
 const putUpdateCustomer = async (req, res) => {
     const { name, address, phone, email, description, id } = req.body;
-    // const result = await updateCustomerService()
+    let image = undefined;
+    if (req.files && req.files.image) {
+        const result = await uploadSingleFile(req.files.image);
+        if (result.status === 'success' && result.error === null) {
+            image = result.path;
+        } else {
+            return res.status(400).send({ ...result });
+        }
+    }
+    const customerData = { name, address, phone, email, description, id, image };
+    const result = await updateCustomerService(customerData);
+    if (result.errorCode === 0) {
+        return res.status(200).json({ ...result });
+    } else {
+        return res.status(400).json({ ...result });
+    }
+};
+
+const deleteCustomer = async (req, res) => {
+    const customerId = req.body.id;
+    const result = await deleteCustomerService(customerId);
+    if (result.errorCode === 0) {
+        return res.status(200).json({ ...result });
+    } else {
+        return res.status(400).json({ ...result });
+    }
+};
+
+const deleteArrayOfCustomer = async (req, res) => {
+    const customerIdList = req.body.idList;
+    const result = await deleteArrayOfCustomerService(customerIdList);
+    if (result.errorCode === 0) {
+        return res.status(200).json({ ...result });
+    } else {
+        return res.status(400).json({ ...result });
+    }
 };
 
 module.exports = {
@@ -83,4 +120,6 @@ module.exports = {
     postCreateArrayCustomer,
     getCustomer,
     putUpdateCustomer,
+    deleteCustomer,
+    deleteArrayOfCustomer,
 };
