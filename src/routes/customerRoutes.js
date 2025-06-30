@@ -8,13 +8,14 @@ const {
     putUpdateCustomer,
     deleteCustomer,
     deleteArrayOfCustomer,
+    getCustomerPagination,
 } = require('../controllers/customerController');
 const router = express.Router();
 
 router.post('/file', postUploadSingleFile);
 router.post('/files', postUploadMultipleFile);
 router.post('/customers', postCreateCustomer);
-router.get('/customers', getCustomer);
+// router.get('/customers', getCustomer);
 router.put('/customers', putUpdateCustomer);
 router.delete('/customers', deleteCustomer);
 
@@ -34,5 +35,8 @@ router.get('/params/:name/:age', async (req, res) => {
         data: req.params,
     });
 });
+
+// Pagination route
+router.get('/customers', getCustomerPagination);
 
 module.exports = router;

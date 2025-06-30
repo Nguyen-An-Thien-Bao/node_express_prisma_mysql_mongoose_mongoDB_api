@@ -1,4 +1,5 @@
 const Customer = require('../modals/customer');
+const aqp = require('api-query-params');
 
 const createCustomerService = async (customerData) => {
     try {
@@ -102,6 +103,46 @@ const deleteArrayOfCustomerService = async (customerIdList) => {
     }
 };
 
+const getCustomerPaginationService = async (pageNumber, pageLimit, queryString) => {
+    try {
+        let result;
+        // if (nameOption) {
+        //     result = await Customer.find({
+        //         name: {
+        //             $regex: `.*${nameOption}.*`,
+        //             $options: 'i',
+        //         },
+        //     })
+        //         .skip(pageLimit * pageNumber - pageLimit)
+        //         .limit(pageLimit);
+        // } else {
+        //     result = await Customer.find({})
+        //         .skip(pageLimit * pageNumber - pageLimit)
+        //         .limit(pageLimit);
+        // }
+        if (pageLimit && pageNumber) {
+            let offset = (pageNumber - 1) * pageLimit;
+            const { filter } = aqp(queryString);
+            delete filter.page; // xóa page vì ko cần thiết
+            console.log(filter);
+            result = await Customer.find(filter).skip(offset).limit(pageLimit).exec();
+        } else {
+            result = await Customer.find({});
+        }
+        return {
+            errorCode: 0,
+            data: result,
+        };
+    } catch (error) {
+        console.log('>>> Error From Get Customer Pagination Service: ', error);
+        return {
+            errorCode: 1,
+            data: null,
+            error: error,
+        };
+    }
+};
+
 module.exports = {
     createCustomerService,
     createArrayOfCustomerService,
@@ -109,4 +150,5 @@ module.exports = {
     updateCustomerService,
     deleteCustomerService,
     deleteArrayOfCustomerService,
+    getCustomerPaginationService,
 };

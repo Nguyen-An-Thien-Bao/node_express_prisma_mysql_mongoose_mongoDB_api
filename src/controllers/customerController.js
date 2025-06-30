@@ -6,6 +6,7 @@ const {
     updateCustomerService,
     deleteCustomerService,
     deleteArrayOfCustomerService,
+    getCustomerPaginationService,
 } = require('../services/customerService');
 
 const postUploadSingleFile = async (req, res) => {
@@ -113,6 +114,18 @@ const deleteArrayOfCustomer = async (req, res) => {
     }
 };
 
+const getCustomerPagination = async (req, res) => {
+    const pageNumber = Number(req.query.page);
+    const pageLimit = Number(req.query.limit);
+
+    const result = await getCustomerPaginationService(pageNumber, pageLimit, req.query);
+    if (result.errorCode === 0) {
+        return res.status(200).json({ ...result });
+    } else {
+        return res.status(400).json({ ...result });
+    }
+};
+
 module.exports = {
     postUploadSingleFile,
     postUploadMultipleFile,
@@ -122,4 +135,5 @@ module.exports = {
     putUpdateCustomer,
     deleteCustomer,
     deleteArrayOfCustomer,
+    getCustomerPagination,
 };
